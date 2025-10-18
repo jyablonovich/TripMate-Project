@@ -19,10 +19,10 @@
    
         npm ci --only=production
 
-4) Configurar AWS CLI
+3) Configurar AWS CLI
 
-En la dirección main del proyecto (**cd TripMate-infra**)
-    aws configure
+   En la dirección main del proyecto (**cd TripMate-infra**)
+       aws configure
 
 
         Credenciales
@@ -31,7 +31,7 @@ En la dirección main del proyecto (**cd TripMate-infra**)
 
 4) Ejecutar Terraform
 
-   En la dirección main del proyecto (**cd TripMate-infra**)
+      En la dirección main del proyecto (**cd TripMate-infra**)
        
         terraform init
         terraform apply -var-file="env/dev.tfvars"
