@@ -1,5 +1,4 @@
 # Guía paso a paso para ejecución
-## Requisitos previos
 
 1) Asegurarse de tener descargado en la computadora Nodejs y Git.
 
