@@ -12,10 +12,10 @@
         npm ci --only=production
 
 
-   Dependencias del lambda_dbinit
+      Dependencias del lambda_dbinit
    
         
-  EN (**cd TripMate-infra/app_code/lambdas/lambda_dbinit**)
+     EN (**cd TripMate-infra/app_code/lambdas/lambda_dbinit**)
    
         npm ci --only=production
 
