@@ -36,7 +36,7 @@
         terraform init
         terraform apply -var-file="env/dev.tfvars"
 
-5) Acceso a la aplicación
+5) Acceso a la aplicación **IMPORTANTE LEER**
 
 Una vez levantado, Entrar al link de s3_website que aparece en terminal.
 Te va a dirigir a una página de bienvenida donde habrá un botón para iniciar sesión con cognito.
