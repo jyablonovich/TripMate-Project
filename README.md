@@ -49,6 +49,7 @@ Al iniciar sesión con otra cuenta en cognito y pegando el código del viaje cre
 
 (Si un usuario agrega una actividad el otro usuario debe refrescar la página y volver a presionar el botón listar → abrir el viaje para que le aparezca la nueva actividad. Al igual que los nuevos votos).
 Cada vez que el usuario entra a la app tiene que presionar LISTAR VIAJES para verlos.
+
 Eliminar viaje → Solo el usuario CREADOR del viaje lo puede eliminar.
 
 
