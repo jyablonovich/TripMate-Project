@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>TripMate · Mis viajes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --bg:#060a17; --panel:#0b1224; --card:#0f172a; --ink:#e5e7eb; --muted:#9fb0c9; --line:#1d2a42;
+      --primary:#22c55e; --primary-2:#16a34a; --danger:#ef4444; --danger-2:#dc2626
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,#060a17,#0b1021);color:var(--ink);font-family:system-ui}
+    .shell{max-width:1100px;margin:0 auto;padding:20px}
+    .nav{display:flex;align-items:center;justify-content:space-between;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px 16px;margin:14px 0}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800}
+    .pill{display:inline-flex;align-items:center;gap:8px;background:#0d1b33;border:1px solid #223456;color:#a7b5cc;padding:6px 10px;border-radius:999px;font-size:13px}
+    .btn{display:inline-flex;align-items:center;gap:8px;background:var(--primary);border:none;color:#06210f;padding:10px 14px;border-radius:12px;font-weight:800;cursor:pointer}
+    .btn:hover{background:var(--primary-2)}
+    .btn.ghost{background:#132033;color:#d3dded;border:1px solid var(--line)}
+    .btn.danger{background:var(--danger); color:#fff}
+    .btn.danger:hover{background:var(--danger-2)}
+    .grid{display:grid;grid-template-columns:1fr;gap:14px}
+    @media(min-width:900px){ .grid{grid-template-columns:1.1fr 1fr} }
+    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 14px 50px #0006}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    input{flex:1;min-width:220px;background:#0b1429;border:1px solid #223456;border-radius:12px;padding:12px;color:var(--ink)}
+    table{width:100%}
+    thead th{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:#bcd;background:transparent;border:none;padding:6px 10px;text-align:left}
+    .empty{display:grid;place-items:center;padding:30px 10px;color:var(--muted)}
+    .toast{position:fixed;top:18px;right:18px;background:#0f1d33;color:#e7f7ff;border:1px solid #204066;padding:10px 14px;border-radius:12px;box-shadow:0 10px 30px #0007;display:none;z-index:10}
+    .toast.ok{border-color:#0a6b3a;background:#0d1f17;color:#d8ffea}
+    .toast.err{border-color:#6b1010;background:#1f1010;color:#ffd8d8}
+    .sectionTitle{display:flex;align-items:center;justify-content:space-between;margin:6px 0 12px}
+    .subtle{color:#9fb0c9;font-size:13px}
+    .tag{display:inline-block;background:#0d1b33;border:1px solid #223456;border-radius:999px;padding:4px 8px;font-size:12px}
+    .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+
+    /* --- Lista de viajes: más espacio y "cards" por fila --- */
+    #tabla{ border-collapse:separate; border-spacing:0 14px; }        /* espacio entre filas */
+    #tabla tbody td{
+      background:#0b1429; border:1px solid var(--line); padding:16px 14px; vertical-align:middle;
+    }
+    #tabla tbody tr td:first-child{ border-radius:12px 0 0 12px; border-right:none; }
+    #tabla tbody tr td:last-child{ border-radius:0 12px 12px 0; border-left:none; }
+    .col-nombre{ width:34%; }
+    .col-owner{ width:30%; }
+    .col-fecha{ width:20%; white-space:nowrap; }
+    .col-codigo{ width:10%; }
+    .col-actions{ width:6%; text-align:right; }
+    .pill.big{ padding:10px 12px; font-size:14px; }
+    #tbody .row-actions{ display:flex; justify-content:flex-end; gap:10px; }
+    #tbody .owner-pill{ max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+    /* Actividades table spacing */
+    #actTabla{ border-collapse:separate; border-spacing:0 10px; }
+    #actTabla tbody td{
+      background:#0b1429; border:1px solid var(--line); padding:12px; vertical-align:middle;
+    }
+    #actTabla tbody tr td:first-child{ border-radius:12px 0 0 12px; border-right:none; }
+    #actTabla tbody tr td:last-child{ border-radius:0 12px 12px 0; border-left:none; }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="nav">
+      <div class="brand">
+        <svg width="24" height="24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7v2H3l2.3 9.2A2 2 0 0 0 7.3 21h9.4a2 2 0 0 0 2-1.8L21 11h-2V9a7 7 0 0 0-7-7Zm5 9-1.6 8H8.6L7 11h10Zm-8-2a3 3 0 1 1 6 0v2H9V9Z"/></svg>
+        TripMate
+        <span id="userPill" class="pill">No autenticado</span>
+      </div>
+      <div class="row">
+        <button id="btnListar" class="btn ghost">Listar viajes</button>
+        <button id="btnLogout" class="btn ghost">Salir</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Nuevo viaje</h3>
+        <div class="row">
+          <input id="nombre" placeholder="Ej: Escapada a Bariloche" />
+          <button id="btnGuardar" class="btn">Guardar</button>
+        </div>
+        <div id="nuevoCodigo" class="subtle" style="margin-top:8px;display:none">
+          Código de acceso: <span class="mono tag" id="nuevoCodigoVal"></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Unirse a un viaje</h3>
+        <div class="row">
+          <input id="joinCode" class="mono" placeholder="Código (p.ej. 7K3QZF)" />
+          <button id="btnUnirse" class="btn">Unirse</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="sectionTitle">
+          <h3>Mis viajes</h3>
+          <span class="subtle">Abrí un viaje para ver actividades</span>
+        </div>
+        <div id="listWrap">
+          <div class="empty" id="empty">No hay viajes todavía. ¡Agregá el primero! ✈️</div>
+          <table id="tabla" style="display:none">
+            <thead>
+              <tr>
+                <th class="col-nombre">Nombre</th>
+                <th class="col-owner">Owner</th>
+                <th class="col-fecha">Fecha</th>
+                <th class="col-codigo">Código</th>
+                <th class="col-actions"></th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel de actividades -->
+    <div class="card" id="panelActividades" style="margin-top:14px; display:none">
+      <div class="sectionTitle">
+        <h3>Actividades de: <span id="viajeTitulo" class="tag"></span></h3>
+        <span id="viajeInfo" class="subtle"></span>
+      </div>
+      <div class="row" style="margin-bottom:10px">
+        <input id="actNombre" placeholder="Ej: Circuito cervecero" />
+        <input id="actPrecio" placeholder="Precio" />
+        <button id="btnCrearAct" class="btn">Agregar actividad</button>
+      </div>
+      <div id="actListWrap">
+        <div class="empty" id="actEmpty">Todavía no hay actividades.</div>
+        <table id="actTabla" style="display:none">
+          <thead>
+            <tr>
+              <th>Actividad</th><th>Precio</th><th>👍</th><th>👎</th><th>Votaron</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="actBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+<script>
+  // Inyectadas por Terraform:
+  // window.API_BASE, window.COGNITO_DOMAIN, window.COGNITO_CLIENT_ID, window.SIGNOUT_REDIRECT
+
+  const $ = s => document.querySelector(s);
+  const fmt = new Intl.DateTimeFormat(undefined, { dateStyle:'medium', timeStyle:'short' });
+  const toast = $('#toast');
+  let idToken = null;
+  let currentViaje = null;
+
+  function showToast(msg, type='ok'){ toast.textContent=msg; toast.className='toast '+(type==='ok'?'ok':'err'); toast.style.display='block'; clearTimeout(showToast._t); showToast._t=setTimeout(()=>toast.style.display='none',2500); }
+  function setUserPill(text, good=true){ const pill = $('#userPill'); pill.textContent=text; pill.style.borderColor=good?'#1d6f45':'#5b2b2b'; pill.style.background=good?'#0d2219':'#221010'; pill.style.color=good?'#d8ffea':'#ffd8d8'; }
+  function decodeJwt(t){ try{ const p=t.split('.')[1]; const j=atob(p.replace(/-/g,'+').replace(/_/g,'/')); return JSON.parse(decodeURIComponent(escape(j))); }catch{ return {}; } }
+  function escapeHtml(s){ return String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c])); }
+  function authHeaders(){ const h={'Content-Type':'application/json'}; if(idToken) h['Authorization']='Bearer '+idToken; return h; }
+
+  // Parse tokens en URL fragment (post-login)
+  (function readFragment(){
+    const h = location.hash.startsWith('#') ? location.hash.slice(1) : '';
+    if (!h) return;
+    const p = new URLSearchParams(h);
+    const idt = p.get('id_token'); const at = p.get('access_token');
+    if (idt) localStorage.setItem('idToken', idt);
+    if (at)  localStorage.setItem('accessToken', at);
+    history.replaceState({}, '', location.pathname);
+  })();
+
+  idToken = localStorage.getItem('idToken');
+  if (idToken){
+    const c = decodeJwt(idToken);
+    setUserPill(c.email || c['cognito:username'] || 'Autenticado', true);
+  } else {
+    setUserPill('No autenticado', false);
+  }
+
+  async function fetchJSON(url, opts={}) {
+    const r = await fetch(url, opts);
+    const t = await r.text();
+    let data = t;
+    try{ const obj=JSON.parse(t); data=('body' in obj)? JSON.parse(obj.body): obj; }catch{}
+    return { status:r.status, data };
+  }
+
+  // ===== VIAJES =====
+  async function listar(){
+    const { status, data } = await fetchJSON(`${window.API_BASE}/listar`, { headers: authHeaders() });
+    if (status===200){
+      const rows = Array.isArray(data)? data : [];
+      const tbody = $('#tbody');
+      if (!rows.length){
+        $('#tabla').style.display='none';
+        $('#empty').style.display='grid';
+        return;
+      }
+      $('#tabla').style.display='table';
+      $('#empty').style.display='none';
+      tbody.innerHTML='';
+
+      rows.forEach(r=>{
+        const tr=document.createElement('tr');
+        tr.innerHTML = `
+          <td class="col-nombre"><span class="pill big">${escapeHtml(r.nombre)}</span></td>
+          <td class="col-owner"><span class="pill owner-pill">${escapeHtml(r.owner || '—')}</span></td>
+          <td class="col-fecha">${r.created_at ? fmt.format(new Date(r.created_at)) : '-'}</td>
+          <td class="col-codigo"><span class="mono tag">${escapeHtml(r.access_code || '—')}</span></td>
+          <td class="col-actions">
+            <div class="row-actions">
+              <button class="btn ghost" data-open="${r.id}" data-name="${escapeHtml(r.nombre)}">Abrir</button>
+              <button class="btn danger" data-del="${r.id}" title="Eliminar">✖</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // Abrir viaje
+      tbody.querySelectorAll('[data-open]').forEach(btn=>{
+        btn.onclick = () => openViaje(Number(btn.dataset.open), btn.dataset.name);
+      });
+
+      // Eliminar viaje
+      tbody.querySelectorAll('[data-del]').forEach(btn=>{
+        btn.onclick = async () => {
+          const id = Number(btn.dataset.del);
+          if (!confirm('¿Eliminar este viaje? Esta acción no se puede deshacer.')) return;
+          const { status, data } = await fetchJSON(`${window.API_BASE}/guardar`, {
+            method:'POST', headers: authHeaders(), body: JSON.stringify({ delete_viaje:id })
+          });
+          if (status===200 && data?.ok){ showToast('Viaje eliminado'); if (currentViaje?.id===id) { currentViaje=null; $('#panelActividades').style.display='none'; } await listar(); }
+          else showToast('No se pudo eliminar', 'err');
+        };
+      });
+
+      showToast('Listado actualizado');
+    } else showToast('Error al listar', 'err');
+  }
+
+  async function guardar(){
+    const nombre = ($('#nombre').value || '').trim();
+    if (!nombre){ showToast('Ingresá un nombre', 'err'); $('#nombre').focus(); return; }
+    const { status, data } = await fetchJSON(`${window.API_BASE}/guardar`, {
+      method:'POST', headers: authHeaders(), body: JSON.stringify({ nombre })
+    });
+    if (status===200 && data?.ok){
+      showToast('Guardado ✅'); $('#nombre').value='';
+      if (data.access_code){ $('#nuevoCodigo').style.display='block'; $('#nuevoCodigoVal').textContent = data.access_code; }
+      await listar();
+    } else showToast('Error al guardar', 'err');
+  }
+
+  async function unirse(){
+    const codigo = ($('#joinCode').value || '').trim().toUpperCase();
+    if (!codigo){ showToast('Ingresá un código', 'err'); $('#joinCode').focus(); return; }
+    const { status, data } = await fetchJSON(`${window.API_BASE}/unirse`, {
+      method:'POST', headers: authHeaders(), body: JSON.stringify({ codigo })
+    });
+    if (status===200 && data?.ok){
+      showToast('Te uniste al viaje ✅');
+      $('#joinCode').value='';
+      await listar();
+    } else {
+      showToast(data?.error || 'No se pudo unir', 'err');
+    }
+  }
+
+  async function openViaje(id, nombre){
+    currentViaje = { id, nombre };
+    $('#viajeTitulo').textContent = `${nombre}`;
+    $('#viajeInfo').textContent = '';
+    $('#panelActividades').style.display='block';
+    await cargarActividades();
+  }
+
+  // ===== ACTIVIDADES =====
+  async function cargarActividades(){
+    if (!currentViaje) return;
+    const { status, data } = await fetchJSON(`${window.API_BASE}/viajes/${currentViaje.id}/actividades`, { headers: authHeaders() });
+    if (status!==200) { showToast('Error al traer actividades', 'err'); return; }
+    const acts = data.actividades || [];
+    const votos = data.votos || [];
+    const byAct = votos.reduce((m,v)=>{ (m[v.actividad_id]??=[]).push(v); return m; }, {});
+
+    const tbody = $('#actBody');
+    if (!acts.length){
+      $('#actTabla').style.display='none'; $('#actEmpty').style.display='grid'; tbody.innerHTML='';
+      return;
+    }
+    $('#actTabla').style.display='table'; $('#actEmpty').style.display='none';
+    tbody.innerHTML='';
+
+    acts.forEach(a=>{
+      const listEmails = (byAct[a.id]||[]).map(v=>`${escapeHtml(v.user_email)}${v.voto? ' 👍':''}`).join(', ');
+      const tr=document.createElement('tr');
+      tr.innerHTML = `
+        <td><span class="pill big">${escapeHtml(a.nombre)}</span></td>
+        <td>$ ${Number(a.precio||0).toFixed(2)}</td>
+        <td>${a.votos_favor||0}</td>
+        <td>${a.votos_contra||0}</td>
+        <td>${listEmails || '—'}</td>
+        <td style="text-align:right; display:flex; gap:8px; justify-content:flex-end;">
+          <button class="btn" data-vote1="${a.id}">👍</button>
+          <button class="btn ghost" data-vote0="${a.id}">👎</button>
+          <button class="btn danger" data-delact="${a.id}" title="Eliminar">✖</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    tbody.querySelectorAll('[data-vote1]').forEach(b=> b.onclick = ()=> votar(Number(b.dataset.vote1), 1));
+    tbody.querySelectorAll('[data-vote0]').forEach(b=> b.onclick = ()=> votar(Number(b.dataset.vote0), 0));
+    tbody.querySelectorAll('[data-delact]').forEach(b=> b.onclick = ()=> eliminarActividad(Number(b.dataset.delact)));
+  }
+
+  async function crearActividad(){
+    if (!currentViaje) return;
+    const nombre = ($('#actNombre').value || '').trim();
+    const precio = Number($('#actPrecio').value || 0);
+    if (!nombre) { showToast('Actividad sin nombre', 'err'); $('#actNombre').focus(); return; }
+    if (!(isFinite(precio) && precio >= 0)) { showToast('Precio inválido', 'err'); $('#actPrecio').focus(); return; }
+
+    const { status, data } = await fetchJSON(`${window.API_BASE}/viajes/${currentViaje.id}/actividades`, {
+      method:'POST', headers: authHeaders(), body: JSON.stringify({ nombre, precio })
+    });
+    if (status===200 && data?.ok){
+      $('#actNombre').value=''; $('#actPrecio').value='';
+      showToast('Actividad creada ✅'); await cargarActividades();
+    } else showToast('Error al crear', 'err');
+  }
+
+  async function eliminarActividad(actividadId){
+    if (!currentViaje) return;
+    if (!confirm('¿Eliminar esta actividad?')) return;
+    const { status, data } = await fetchJSON(`${window.API_BASE}/viajes/${currentViaje.id}/actividades`, {
+      method:'POST', headers: authHeaders(), body: JSON.stringify({ delete_id: actividadId })
+    });
+    if (status===200 && data?.ok){ showToast('Actividad eliminada'); await cargarActividades(); }
+    else showToast('No se pudo eliminar', 'err');
+  }
+
+  async function votar(actividadId, voto){
+    const { status, data } = await fetchJSON(`${window.API_BASE}/viajes/${currentViaje.id}/actividades/${actividadId}/votar`, {
+      method:'POST', headers: authHeaders(), body: JSON.stringify({ voto })
+    });
+    if (status===200 && data?.ok){ showToast('Voto registrado ✅'); await cargarActividades(); }
+    else showToast('No se pudo votar', 'err');
+  }
+
+  // Eventos
+  $('#btnGuardar').onclick = guardar;
+  $('#btnListar').onclick  = listar;
+  $('#btnUnirse').onclick  = unirse;
+  $('#btnCrearAct').onclick = crearActividad;
+
+  document.getElementById('btnLogout').onclick = () => {
+    try { localStorage.removeItem('idToken'); localStorage.removeItem('accessToken'); } catch {}
+    const url = `${window.COGNITO_DOMAIN}/logout?client_id=${encodeURIComponent(window.COGNITO_CLIENT_ID)}&logout_uri=${encodeURIComponent(window.API_BASE + '/signout')}`;
+    window.location = url;
+  };
+
+  // Inicial
+  listar();
+</script>
+</body>
+</html>
