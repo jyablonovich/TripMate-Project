@@ -177,8 +177,8 @@ lifecycle {
 }
 
 
-<img width="1372" height="1332" alt="DIAGRAMA TRIPMATE drawio" src="https://github.com/user-attachments/assets/4fd8b70d-c8d1-4f75-9c4b-dcbf32e7b4c5" />
+<img width="1219" height="1387" alt="DIAGRAMA TRIPMATE drawio (1)" src="https://github.com/user-attachments/assets/4d699eaa-b2f8-42ec-b71b-39b3d60a1129" />
 
 
 
-IMAGEN 
+
