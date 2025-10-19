@@ -185,7 +185,7 @@ Por una cuestión de prolijidad, la conexión desde API Gateway hacia las funcio
 
 Aunque ambas funciones tienen integraciones independientes con API Gateway, optamos por esta simplificación para evitar sobrecargar el diagrama con múltiples líneas que representarían flujos similares. 
 
-De igual manera por prolijidad, fue la conexion de ambdas lambdas al nat gateway.
+De igual manera por prolijidad, fue la conexion de ambas lambdas al nat gateway.
 
 
 
