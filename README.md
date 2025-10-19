@@ -87,6 +87,7 @@ El módulo devuelve el ARN del topic, que se puede usar para conectarlo con las 
 
 ### VPC_EXT
 
+Es el modulo externo que usa TripMate.
 Este módulo arma toda la infraestructura de red (VPC) del proyecto.
 Usa el módulo oficial de AWS para crear las subredes públicas, privadas y de base de datos, además de configurar un NAT Gateway para que las Lambdas puedan salir a Internet sin ser accesibles desde afuera.
 También crea dos grupos de seguridad (SGs):
