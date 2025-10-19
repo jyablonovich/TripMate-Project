@@ -47,7 +47,6 @@ En cuanto a la funcionalidad de unirse, otro usuario puede iniciar sesión con u
 
 Si un usuario agrega una nueva actividad o realiza un voto, los demás deben refrescar la página, presionar “Listar viajes” nuevamente y abrir el viaje para ver los cambios actualizados. SIEMPRE QUE SE REFRESCA LA PAGINA HAY QUE PRESIONAR LISTAR VIAJES PARA VOLVER A VERLOS.
 
-Por último, solo el usuario creador del viaje tiene permisos para eliminarlo.
 
 
 ## Descripción de módulos
