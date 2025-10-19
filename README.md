@@ -104,7 +104,7 @@ Tiene 4 funciones Lambda:
 
 backend: maneja las operaciones principales como guardar, listar, unirse a viajes, votar, etc.
 
-callback: se usa cuando el usuario vuelve del login de Cognito.
+callback: se usa cuando el usuario vuelve del login de Cognito a la app.
 
 signout: cierra la sesión y redirige al login.
 
