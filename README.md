@@ -1,6 +1,6 @@
 # Guía paso a paso para ejecución
 
-1) Asegurarse de tener descargado en la computadora Nodejs y Git.
+1) Asegurarse de tener descargado en la computadora **Nodejs y Git**.
 
 2) Descargar dependencias Lambda
 
@@ -22,35 +22,32 @@
 3) Configurar AWS CLI
 
    En la dirección main del proyecto (**cd TripMate-infra**)
-       aws configure
+
+      -aws configure
 
 
         Credenciales
         Región: us-east-1
         Default output format: json
 
-4) Ejecutar Terraform
+5) Ejecutar Terraform
 
       En la dirección main del proyecto (**cd TripMate-infra**)
        
         terraform init
         terraform apply -var-file="env/dev.tfvars"
 
-5) Acceso a la aplicación **IMPORTANTE LEER**
+6) Acceso a la aplicación **IMPORTANTE LEER**
 
-Una vez levantado, Entrar al link de s3_website que aparece en terminal.
-Te va a dirigir a una página de bienvenida donde habrá un botón para iniciar sesión con cognito.
-Te lleva al login de cognito y una vez iniciada sesión entra a la app.
-Una vez dentro de la app el usuario puede crear viajes (poner nombre del viaje → guardar → esperar unos segundos → apretar listar viajes).
-También existe la funcionalidad dentro de cada viaje crear actividades y votar.
+Una vez desplegada la infraestructura, se debe ingresar al enlace del s3_website que aparece en la terminal después de ejecutar el terraform apply. Este enlace dirige a una página de bienvenida donde hay un botón para iniciar sesión con Cognito. Al hacer clic, se redirige al login de Cognito, y una vez iniciada la sesión, el usuario accede a la aplicación principal.
 
-Sobre la funcionalidad de UNIRSE:
-Al iniciar sesión con otra cuenta en cognito y pegando el código del viaje creado por la otra persona ahora más de un usuario puede estar en un mismo viaje.
+Dentro de la aplicación, el usuario puede crear viajes ingresando un nombre, presionando “Guardar”, esperando unos segundos y luego haciendo clic en “Listar viajes” para visualizarlos. Además, dentro de cada viaje se pueden crear actividades y votar.
 
-(Si un usuario agrega una actividad el otro usuario debe refrescar la página y volver a presionar el botón listar → abrir el viaje para que le aparezca la nueva actividad. Al igual que los nuevos votos).
-Cada vez que el usuario entra a la app tiene que presionar LISTAR VIAJES para verlos.
+En cuanto a la funcionalidad de unirse, otro usuario puede iniciar sesión con una cuenta diferente en Cognito y unirse a un viaje existente ingresando el código del viaje creado por otra persona. De esta manera, varios usuarios pueden estar en un mismo viaje.
 
-Eliminar viaje → Solo el usuario CREADOR del viaje lo puede eliminar.
+Si un usuario agrega una nueva actividad o realiza un voto, los demás deben refrescar la página, presionar “Listar viajes” nuevamente y abrir el viaje para ver los cambios actualizados. SIEMPRE QUE SE REFRESCA LA PAGINA HAY QUE PRESIONAR LISTAR VIAJES PARA VOLVER A VERLOS.
+
+Por último, solo el usuario creador del viaje tiene permisos para eliminarlo.
 
 
 ## Descripción de módulos
